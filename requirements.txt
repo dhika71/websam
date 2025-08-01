@@ -1,9 +1,11 @@
 streamlit
 pandas
 numpy
-yfinance
 xgboost
 scikit-learn
+yfinance
 ta
-google-generativeai
 plotly
+google-generativeai
+python-dotenv
+joblib
