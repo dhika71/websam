@@ -1,15 +1,22 @@
-import yfinance as yf
 import pandas as pd
 import ta
 
-def load_data(ticker):
-    df = yf.download(ticker, period="6mo", interval="1d")
-    df = df.dropna()
-    return df
-
 def create_features(df):
-    df["RSI"] = ta.momentum.RSIIndicator(df["Close"]).rsi()
-    df["MA20"] = df["Close"].rolling(window=20).mean()
-    df["MA50"] = df["Close"].rolling(window=50).mean()
-    # dll...
-    return df.dropna()
+    df = df.copy()
+
+    # Pastikan kolom 'Close' ada dan bertipe Series
+    if "Close" not in df.columns:
+        raise ValueError("Data harus memiliki kolom 'Close'")
+
+    # Indikator teknikal
+    close = df["Close"]
+
+    df["RSI"] = ta.momentum.RSIIndicator(close=close).rsi()
+    df["SMA_20"] = ta.trend.SMAIndicator(close=close, window=20).sma_indicator()
+    df["EMA_20"] = ta.trend.EMAIndicator(close=close, window=20).ema_indicator()
+    df["MACD"] = ta.trend.MACD(close=close).macd()
+
+    # Buang baris awal yang kosong karena rolling window
+    df.dropna(inplace=True)
+
+    return df
